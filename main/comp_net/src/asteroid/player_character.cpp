@@ -47,22 +47,22 @@ void PlayerCharacterManager::FixedUpdate(seconds dt)
         auto playerCharacter = GetComponent(playerEntity);
         const auto input = playerCharacter.input;
 
-        const bool right = input & PlayerInput::RIGHT;
-        const bool left = input & PlayerInput::LEFT;
+        //const bool right = input & PlayerInput::RIGHT;
+        //const bool left = input & PlayerInput::LEFT;
         const bool up = input & PlayerInput::UP;
         const bool down = input & PlayerInput::DOWN;
 
-        const auto angularVelocity = ((left ? 1.0f : 0.0f) + (right ? -1.0f : 0.0f)) * playerAngularSpeed;
+        //const auto angularVelocity = ((left ? 1.0f : 0.0f) + (right ? -1.0f : 0.0f)) * playerAngularSpeed;
 
-        playerBody.angularVelocity = angularVelocity;
+        //playerBody.angularVelocity = angularVelocity;
 
         auto dir = Vec2f::up;
-        dir = dir.Rotate(-(playerBody.rotation + playerBody.angularVelocity * dt.count()));
+        //dir = dir.Rotate(-(playerBody.rotation + playerBody.angularVelocity * dt.count()));
 
-        const auto acceleration = ((down ? -1.0f : 0.0f) + (up ? 1.0f : 0.0f)) * dir;
+        const auto acceleration = (((down ? -1.0f : 0.0f) + (up ? 1.0f : 0.0f)) * dir) * 5; // *5 = multiplication de l'accélération du player
 
 
-        playerBody.velocity += acceleration * dt.count();
+        playerBody.velocity = acceleration; // enlever * dt.count et + de += acceleration -> 
 
         physicsManager_.get().SetBody(playerEntity, playerBody);
 
@@ -72,15 +72,15 @@ void PlayerCharacterManager::FixedUpdate(seconds dt)
             SetComponent(playerEntity, playerCharacter);
         }
         //Check if cannot shoot, and increase shootingTime
-        if(playerCharacter.shootingTime < playerShootingPeriod)
+       /* if(playerCharacter.shootingTime < playerShootingPeriod)
         {
             playerCharacter.shootingTime += dt.count();
             SetComponent(playerEntity, playerCharacter);
-        }
+        }*/
         //Shooting mechanism
-        if (playerCharacter.shootingTime >= playerShootingPeriod)
+        //if (playerCharacter.shootingTime >= playerShootingPeriod)
         {
-            if(input & PlayerInput::SHOOT)
+            /*if(input & PlayerInput::SHOOT)
             {
                 const auto currentPlayerSpeed = playerBody.velocity.Magnitude();
                 const auto bulletVelocity = dir * 
@@ -92,7 +92,7 @@ void PlayerCharacterManager::FixedUpdate(seconds dt)
                                                bulletVelocity);
                 playerCharacter.shootingTime = 0.0f;
                 SetComponent(playerEntity, playerCharacter);
-            }
+            }*/
         }
     }
 }

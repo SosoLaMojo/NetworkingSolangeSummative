@@ -49,7 +49,7 @@ void PhysicsManager::FixedUpdate(seconds dt)
             continue;
         auto body = bodyManager_.GetComponent(entity);
         body.position += body.velocity * dt.count();
-        body.rotation += body.angularVelocity * dt.count();
+        //body.rotation += body.angularVelocity * dt.count();
         bodyManager_.SetComponent(entity, body);
     }
     for (Entity entity = 0; entity < entityManager_.get().GetEntitiesSize(); entity++)

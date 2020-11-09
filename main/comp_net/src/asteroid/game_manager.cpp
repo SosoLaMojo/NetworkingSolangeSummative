@@ -180,19 +180,19 @@ void ClientGameManager::Update(seconds dt)
             {
                 const auto& player = rollbackManager_.GetPlayerCharacterManager().GetComponent(entity);
                 auto sprite = spriteManager_.GetComponent(entity);
-                if (player.invincibilityTime > 0.0f)
-                {
-                    auto leftV = std::fmod(player.invincibilityTime, invincibilityFlashPeriod);
-                    auto rightV = invincibilityFlashPeriod / 2.0f;
-                    //logDebug(fmt::format("Comparing {} and {} with time: {}", leftV, rightV, player.invincibilityTime));
-                }
-                if (player.invincibilityTime > 0.0f &&
-                    std::fmod(player.invincibilityTime, invincibilityFlashPeriod)
-                    > invincibilityFlashPeriod / 2.0f)
-                {
-                    sprite.color = Color4(Color::black, 1.0f);
-                }
-                else
+                //if (player.invincibilityTime > 0.0f)
+                //{
+                //    auto leftV = std::fmod(player.invincibilityTime, invincibilityFlashPeriod);
+                //    auto rightV = invincibilityFlashPeriod / 2.0f;
+                //    //logDebug(fmt::format("Comparing {} and {} with time: {}", leftV, rightV, player.invincibilityTime));
+                //}
+                //if (player.invincibilityTime > 0.0f &&
+                //    std::fmod(player.invincibilityTime, invincibilityFlashPeriod)
+                //    > invincibilityFlashPeriod / 2.0f)
+                //{
+                //    sprite.color = Color4(Color::black, 1.0f);
+                //}
+                //else
                 {
                     sprite.color = playerColors[player.playerNumber];
                 }
@@ -301,7 +301,7 @@ void ClientGameManager::SpawnPlayer(net::PlayerNumber playerNumber, Vec2f positi
     const auto& config = BasicEngine::GetInstance()->config;
     if (shipTextureId_ == INVALID_TEXTURE_ID)
     {
-        shipTextureId_ = textureManager_.LoadTexture(config.dataRootPath + "sprites/asteroid/ship.png");
+        shipTextureId_ = textureManager_.LoadTexture(config.dataRootPath + "sprites/asteroid/paddle.png");
     }
     spriteManager_.AddComponent(entity);
     spriteManager_.SetTexture(entity, shipTextureId_);

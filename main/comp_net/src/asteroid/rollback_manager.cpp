@@ -265,11 +265,11 @@ PhysicsState RollbackManager::GetValidatePhysicsState(net::PlayerNumber playerNu
         state += anglePtr[i];
     }
     //Adding angular Velocity
-    const auto angularVelocity = playerBody.angularVelocity.value();
-    const auto* angularVelPtr = reinterpret_cast<const PhysicsState*>(&angularVelocity);
-    for (size_t i = 0; i < sizeof(float) / sizeof(PhysicsState); i++)
+    //const auto angularVelocity = playerBody.angularVelocity.value();
+    //const auto* angularVelPtr = reinterpret_cast<const PhysicsState*>(&angularVelocity);
+    //for (size_t i = 0; i < sizeof(float) / sizeof(PhysicsState); i++)
     {
-        state += angularVelPtr[i];
+        //state += angularVelPtr[i];
     }
     return state;
 }
@@ -323,10 +323,10 @@ void RollbackManager::OnCollision(Entity entity1, Entity entity2)
             gameManager_.DestroyBullet(bulletEntity);
             //lower health point
             auto playerCharacter = currentPlayerManager_.GetComponent(playerEntity);
-            if (playerCharacter.invincibilityTime <= 0.0f)
+            //if (playerCharacter.invincibilityTime <= 0.0f)
             {
-                playerCharacter.health--;
-                playerCharacter.invincibilityTime = playerInvincibilityPeriod;
+                //playerCharacter.health--;
+                //playerCharacter.invincibilityTime = playerInvincibilityPeriod;
             }
             currentPlayerManager_.SetComponent(playerEntity, playerCharacter);
         }
@@ -359,7 +359,7 @@ void RollbackManager::SpawnBullet(net::PlayerNumber playerNumber, Entity entity,
     bulletBox.extends = Vec2f::one * bulletScale * 0.5f;
 
     currentBulletManager_.AddComponent(entity);
-    currentBulletManager_.SetComponent(entity, { bulletPeriod, playerNumber });
+    //currentBulletManager_.SetComponent(entity, { bulletPeriod, playerNumber });
 
     currentPhysicsManager_.AddBody(entity);
     currentPhysicsManager_.SetBody(entity, bulletBody);
