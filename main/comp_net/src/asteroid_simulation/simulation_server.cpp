@@ -105,27 +105,27 @@ void SimulationServer::DrawImGui()
     ImGui::End();
 }
 
-void SimulationServer::PutPacketInSendingQueue(std::unique_ptr<asteroid::Packet> packet)
+void SimulationServer::PutPacketInSendingQueue(std::unique_ptr<pongsoso::Packet> packet)
 {
     sentPackets_.push_back({ avgDelay_ + RandomRange(-marginDelay_, marginDelay_), std::move(packet) });
 }
 
-void SimulationServer::PutPacketInReceiveQueue(std::unique_ptr<asteroid::Packet> packet)
+void SimulationServer::PutPacketInReceiveQueue(std::unique_ptr<pongsoso::Packet> packet)
 {
     receivedPackets_.push_back({ avgDelay_ + RandomRange(-marginDelay_, marginDelay_), std::move(packet) });
 }
 
-void SimulationServer::SendReliablePacket(std::unique_ptr<asteroid::Packet> packet)
+void SimulationServer::SendReliablePacket(std::unique_ptr<pongsoso::Packet> packet)
 {
     PutPacketInSendingQueue(std::move(packet));
 }
 
-void SimulationServer::SendUnreliablePacket(std::unique_ptr<asteroid::Packet> packet)
+void SimulationServer::SendUnreliablePacket(std::unique_ptr<pongsoso::Packet> packet)
 {
     PutPacketInSendingQueue(std::move(packet));
 }
 
-void SimulationServer::ProcessReceivePacket(std::unique_ptr<asteroid::Packet> packet)
+void SimulationServer::ProcessReceivePacket(std::unique_ptr<pongsoso::Packet> packet)
 {
     Server::ReceivePacket(std::move(packet));
 }
@@ -133,14 +133,14 @@ void SimulationServer::ProcessReceivePacket(std::unique_ptr<asteroid::Packet> pa
 void SimulationServer::SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumber)
 {
 
-    auto spawnPlayer = std::make_unique<asteroid::SpawnPlayerPacket>();
-    spawnPlayer->packetType = asteroid::PacketType::SPAWN_PLAYER;
+    auto spawnPlayer = std::make_unique<pongsoso::SpawnPlayerPacket>();
+    spawnPlayer->packetType = pongsoso::PacketType::SPAWN_PLAYER;
     spawnPlayer->clientId = ConvertToBinary(clientId);
     spawnPlayer->playerNumber = playerNumber;
 
-    const auto pos = asteroid::spawnPositions[playerNumber] * 3.0f;
+    const auto pos = pongsoso::spawnPositions[playerNumber] * 3.0f;
     spawnPlayer->pos = ConvertToBinary(pos);
-    const auto rotation = asteroid::spawnRotations[playerNumber];
+    const auto rotation = pongsoso::spawnRotations[playerNumber];
     spawnPlayer->angle = ConvertToBinary(rotation);
     gameManager_.SpawnPlayer(playerNumber, pos, rotation);
     SendReliablePacket(std::move(spawnPlayer));

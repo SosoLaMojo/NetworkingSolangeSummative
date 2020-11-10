@@ -28,18 +28,20 @@
 #include "engine/component.h"
 #include "graphics/color.h"
 
-namespace neko::asteroid
+namespace neko::pongsoso
 {
 
 const std::uint32_t maxPlayerNmb = 2;
 const short playerHealth = 5;
 const float playerSpeed = 1.0f;
-//const float playerScale = 2.0f; // Rajout Soso
-const degree_t playerAngularSpeed = degree_t(90.0f);
+const float playerScaleX = 0.5f;// Scale player
+const float playerScaleY = 3.0f;// Scale player
+//const degree_t playerAngularSpeed = degree_t(90.0f);
 //const float playerShootingPeriod = 0.3f;
-const float bulletSpeed = 2.0f;
+const float ballSpeed = 2.0f;
 const float bulletScale = 0.2f;
-const float bulletPeriod = 3.0f;
+const float ballScale = 0.5f;
+//const float bulletPeriod = 3.0f;
 //const float playerInvincibilityPeriod = 1.5f;
 //const float invincibilityFlashPeriod = 0.5f;
 
@@ -56,10 +58,10 @@ const std::array<Color4, std::max(maxPlayerNmb, 4u)> playerColors =
 const std::array<Vec2f, std::max(4u, maxPlayerNmb)> spawnPositions
 {
 	// Position des joueurs au spawn
-        Vec2f(1.8,0),
-        Vec2f(-1.8f,0),
-        Vec2f(1,0),
-        Vec2f(-1,0),
+        Vec2f(1.8,0), // joueur 1
+        Vec2f(-1.8f,0), // joueur 2
+        Vec2f(1,0), // joueur 3
+        Vec2f(-1,0), // joueur 4
 };
 
 const std::array<degree_t, std::max(4u, maxPlayerNmb)> spawnRotations{
@@ -72,10 +74,11 @@ const std::array<degree_t, std::max(4u, maxPlayerNmb)> spawnRotations{
 enum class ComponentType : EntityMask
 {
     PLAYER_CHARACTER = static_cast<EntityMask>(neko::ComponentType::OTHER_TYPE),
-    BULLET = static_cast<EntityMask>(neko::ComponentType::OTHER_TYPE) << 1u,
+    BALL = static_cast<EntityMask>(neko::ComponentType::OTHER_TYPE) << 1u,
     ASTEROID = static_cast<EntityMask>(neko::ComponentType::OTHER_TYPE) << 2u,
     PLAYER_INPUT = static_cast<EntityMask>(neko::ComponentType::OTHER_TYPE) << 3u,
     DESTROYED = static_cast<EntityMask>(neko::ComponentType::OTHER_TYPE) << 4u,
+    BULLET = static_cast<EntityMask>(neko::ComponentType::OTHER_TYPE) << 5u,
 };
 
 namespace PlayerInput

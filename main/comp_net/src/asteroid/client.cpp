@@ -4,14 +4,14 @@
 
 namespace neko::net
 {
-void Client::ReceivePacket(const asteroid::Packet* packet)
+void Client::ReceivePacket(const pongsoso::Packet* packet)
 {
     const auto packetType = packet->packetType;
     switch (packetType)
     {
-    case asteroid::PacketType::SPAWN_PLAYER:
+    case pongsoso::PacketType::SPAWN_PLAYER:
     {
-        const auto* spawnPlayerPacket = static_cast<const asteroid::SpawnPlayerPacket*>(packet);
+        const auto* spawnPlayerPacket = static_cast<const pongsoso::SpawnPlayerPacket*>(packet);
         const auto clientId = ConvertFromBinary<ClientId>(spawnPlayerPacket->clientId);
 
         const PlayerNumber playerNumber = spawnPlayerPacket->playerNumber;
@@ -26,16 +26,16 @@ void Client::ReceivePacket(const asteroid::Packet* packet)
         gameManager_.SpawnPlayer(playerNumber, pos, rotation);
         break;
     }
-    case asteroid::PacketType::START_GAME:
+    case pongsoso::PacketType::START_GAME:
     {
-        const auto* startGamePacket = static_cast<const asteroid::StartGamePacket*>(packet);
+        const auto* startGamePacket = static_cast<const pongsoso::StartGamePacket*>(packet);
         unsigned long startingTime = ConvertFromBinary<unsigned long>(startGamePacket->startTime);
         gameManager_.StartGame(startingTime);
         break;
     }
-    case asteroid::PacketType::INPUT:
+    case pongsoso::PacketType::INPUT:
     {
-        const auto* playerInputPacket = static_cast<const asteroid::PlayerInputPacket*>(packet);
+        const auto* playerInputPacket = static_cast<const pongsoso::PlayerInputPacket*>(packet);
         const auto playerNumber = playerInputPacket->playerNumber;
         const auto inputFrame = ConvertFromBinary<Frame>(playerInputPacket->currentFrame);
 
@@ -81,11 +81,11 @@ void Client::ReceivePacket(const asteroid::Packet* packet)
         }
         break;
     }
-    case asteroid::PacketType::VALIDATE_STATE:
+    case pongsoso::PacketType::VALIDATE_STATE:
     {
-        const auto* validateFramePacket = static_cast<const asteroid::ValidateFramePacket*>(packet);
+        const auto* validateFramePacket = static_cast<const pongsoso::ValidateFramePacket*>(packet);
         const auto newValidateFrame = ConvertFromBinary<Frame>(validateFramePacket->newValidateFrame);
-        std::array<asteroid::PhysicsState, asteroid::maxPlayerNmb> physicsStates{};
+        std::array<pongsoso::PhysicsState, pongsoso::maxPlayerNmb> physicsStates{};
         for (size_t i = 0; i < validateFramePacket->physicsState.size(); i++)
         {
             auto* statePtr = reinterpret_cast<std::uint8_t*>(physicsStates.data());
@@ -95,13 +95,26 @@ void Client::ReceivePacket(const asteroid::Packet* packet)
         //logDebug("Client received validate frame " + std::to_string(newValidateFrame));
         break;
     }
-    case asteroid::PacketType::WIN_GAME:
+    case pongsoso::PacketType::WIN_GAME:
     {
-        const auto* winGamePacket = static_cast<const asteroid::WinGamePacket*>(packet);
+        const auto* winGamePacket = static_cast<const pongsoso::WinGamePacket*>(packet);
         gameManager_.WinGame(winGamePacket->winner);
         break;
     }
-    case asteroid::PacketType::SPAWN_BULLET: break;
+    case pongsoso::PacketType::SPAWN_BULLET: break;
+    {
+	    
+    }
+    case pongsoso::PacketType::SPAWN_BALL:
+    {
+        const auto* spawnBallPacket = static_cast<const pongsoso::SpawnBallPacket*>(packet);
+
+        const auto pos = ConvertFromBinary<Vec2f>(spawnBallPacket->pos);
+        const auto velocity = ConvertFromBinary<Vec2f>(spawnBallPacket->velocity);
+
+        gameManager_.SpawnBall(pos, velocity);
+        break;
+    }
     default:;
     }
 

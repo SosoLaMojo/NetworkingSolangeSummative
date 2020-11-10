@@ -24,7 +24,7 @@
 #include "asteroid/player_character.h"
 #include "asteroid/game_manager.h"
 
-namespace neko::asteroid
+namespace neko::pongsoso
 {
 
 PlayerCharacterManager::PlayerCharacterManager(EntityManager& entityManager, PhysicsManager& physicsManager, GameManager& gameManager) :
@@ -61,8 +61,12 @@ void PlayerCharacterManager::FixedUpdate(seconds dt)
 
         const auto acceleration = (((down ? -1.0f : 0.0f) + (up ? 1.0f : 0.0f)) * dir) * 5; // *5 = multiplication de l'accélération du player
 
-
-        playerBody.velocity = acceleration; // enlever * dt.count et + de += acceleration -> 
+        playerBody.velocity = acceleration; // enlever * dt.count et + de += acceleration -> playerBody.velocity += acceleration * dt.count;
+        if ((playerBody.position.y > playerCharacter.playerMaxHeight && playerBody.velocity.y > 0)|| (playerBody.position.y < playerCharacter.playerMinHeight && playerBody.velocity.y < 0))
+        {
+        	// permet que les joueurs ne sortent pas de l'écran par le haut ou le bas
+            playerBody.velocity = Vec2f::zero;
+        }
 
         physicsManager_.get().SetBody(playerEntity, playerBody);
 
@@ -83,7 +87,7 @@ void PlayerCharacterManager::FixedUpdate(seconds dt)
             /*if(input & PlayerInput::SHOOT)
             {
                 const auto currentPlayerSpeed = playerBody.velocity.Magnitude();
-                const auto bulletVelocity = dir * 
+                const auto bulletVelocity = dir *
                     ((Vec2f::Dot(playerBody.velocity, dir) > 0.0f ? currentPlayerSpeed : 0.0f)
                     + bulletSpeed);
                 const auto bulletPosition = playerBody.position + dir * 0.5f + playerBody.velocity * dt.count();

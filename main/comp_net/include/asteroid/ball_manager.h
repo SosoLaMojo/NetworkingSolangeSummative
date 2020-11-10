@@ -23,34 +23,24 @@
  */
 
 #pragma once
+#include "game.h"
 #include "engine/component.h"
-#include "asteroid/game.h"
-#include "asteroid/physics_manager.h"
+#include "comp_net/type.h"
 
 namespace neko::pongsoso
 {
-
-struct PlayerCharacter
+struct Ball
 {
-    float shootingTime = 0.0f;
-    net::PlayerInput input = 0;
+    float remainingTime = 0.0f;
     net::PlayerNumber playerNumber = net::INVALID_PLAYER;
-    short health = playerHealth;
-    float invincibilityTime = 0.0f;
-    float playerMaxHeight = 4.5f;
-    float playerMinHeight = -5.0f;
 };
 class GameManager;
-class PlayerCharacterManager : public ComponentManager<PlayerCharacter, EntityMask(ComponentType::PLAYER_CHARACTER)>
+class BallManager : public ComponentManager<Ball, static_cast<EntityMask>(ComponentType::BALL)>
 {
 public:
-    explicit PlayerCharacterManager(EntityManager& entityManager, PhysicsManager& physicsManager, GameManager& gameManager);
-    PlayerCharacterManager& operator= ( const PlayerCharacterManager & );
+    explicit BallManager(EntityManager& entityManager, GameManager& gameManager);
     void FixedUpdate(seconds dt);
-
 private:
-    std::reference_wrapper<PhysicsManager> physicsManager_;
     std::reference_wrapper<GameManager> gameManager_;
 };
-
 }

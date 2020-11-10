@@ -28,7 +28,7 @@
 #include <gl/graphics.h>
 #include "asteroid_net/network_client.h"
 
-namespace neko::asteroid
+namespace neko::pongsoso
 {
 
 class ClientApp : public SystemInterface, public DrawImGuiInterface
@@ -44,6 +44,7 @@ public:
                 client_.Init();
                 glEnable(GL_BLEND);
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                glDisable(GL_DEPTH_TEST);
             });
         BasicEngine::GetInstance()->ScheduleJob(&initJob, JobThreadType::RENDER_THREAD);
         initJob.Join();
@@ -61,11 +62,11 @@ public:
         //Checking if keys are down
         const Uint8* keys = SDL_GetKeyboardState(nullptr);
         net::PlayerInput clientInput1 = 0;
-        clientInput1 = clientInput1 | (keys[SDL_SCANCODE_LEFT] ? asteroid::PlayerInput::LEFT : 0u);
-        clientInput1 = clientInput1 | (keys[SDL_SCANCODE_RIGHT] ? asteroid::PlayerInput::RIGHT : 0u);
-        clientInput1 = clientInput1 | (keys[SDL_SCANCODE_UP] ? asteroid::PlayerInput::UP : 0u);
-        clientInput1 = clientInput1 | (keys[SDL_SCANCODE_DOWN] ? asteroid::PlayerInput::DOWN : 0u);
-        clientInput1 = clientInput1 | (keys[SDL_SCANCODE_RCTRL] ? asteroid::PlayerInput::SHOOT : 0u);
+        clientInput1 = clientInput1 | (keys[SDL_SCANCODE_LEFT] ? pongsoso::PlayerInput::LEFT : 0u);
+        clientInput1 = clientInput1 | (keys[SDL_SCANCODE_RIGHT] ? pongsoso::PlayerInput::RIGHT : 0u);
+        clientInput1 = clientInput1 | (keys[SDL_SCANCODE_UP] ? pongsoso::PlayerInput::UP : 0u);
+        clientInput1 = clientInput1 | (keys[SDL_SCANCODE_DOWN] ? pongsoso::PlayerInput::DOWN : 0u);
+        clientInput1 = clientInput1 | (keys[SDL_SCANCODE_RCTRL] ? pongsoso::PlayerInput::SHOOT : 0u);
 
         client_.SetPlayerInput(clientInput1);
         client_.Update(dt);
@@ -103,7 +104,7 @@ private:
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
-    neko::asteroid::ClientEngine engine;
+    neko::pongsoso::ClientEngine engine;
 
     neko::sdl::Gles3Window window;
     neko::gl::Gles3Renderer renderer;

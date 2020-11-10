@@ -26,7 +26,7 @@
 #include "mathematics/vector.h"
 #include "engine/component.h"
 
-namespace neko::asteroid
+namespace neko::pongsoso
 {
 
 enum class BodyType

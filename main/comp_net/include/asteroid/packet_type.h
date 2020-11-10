@@ -31,7 +31,7 @@
 #include "SFML/Network/Packet.hpp"
 
 
-namespace neko::asteroid
+namespace neko::pongsoso
 {
 enum class PacketType : std::uint8_t
 {
@@ -43,6 +43,7 @@ enum class PacketType : std::uint8_t
     START_GAME,
     JOIN_ACK,
     WIN_GAME,
+	SPAWN_BALL,
     NONE,
 };
 
@@ -199,7 +200,7 @@ inline sf::Packet& operator>>(sf::Packet& packet, StartGamePacket& startGamePack
 struct ValidateFramePacket : TypedPacket<PacketType::VALIDATE_STATE>
 {
     std::array<std::uint8_t, sizeof(net::Frame)> newValidateFrame{};
-    std::array<std::uint8_t, sizeof(asteroid::PhysicsState)* maxPlayerNmb> physicsState{};
+    std::array<std::uint8_t, sizeof(pongsoso::PhysicsState)* maxPlayerNmb> physicsState{};
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, const ValidateFramePacket& validateFramePacket)
@@ -226,8 +227,23 @@ inline sf::Packet& operator>>(sf::Packet& packet, WinGamePacket& winGamePacket)
 {
     return packet >> winGamePacket.winner;
 }
+struct SpawnBallPacket : TypedPacket<PacketType::SPAWN_BALL>
+{
+    std::array<std::uint8_t, sizeof(Vec2f)> pos{};
+    std::array<std::uint8_t, sizeof(Vec2f)> velocity{};
+};
 
-inline void GeneratePacket(sf::Packet& packet, asteroid::Packet& sendingPacket)
+inline sf::Packet& operator<<(sf::Packet& packet, const SpawnBallPacket& spawnBallPacket)
+{
+    return packet << spawnBallPacket.pos << spawnBallPacket.velocity;
+}
+
+inline sf::Packet& operator>>(sf::Packet& packet, SpawnBallPacket& spawnBallPacket)
+{
+    return packet >> spawnBallPacket.pos >> spawnBallPacket.velocity;
+}
+
+inline void GeneratePacket(sf::Packet& packet, pongsoso::Packet& sendingPacket)
 {
     packet << sendingPacket;
     switch (sendingPacket.packetType)
@@ -274,7 +290,12 @@ inline void GeneratePacket(sf::Packet& packet, asteroid::Packet& sendingPacket)
         packet << packetTmp;
         break;
     }
-
+    case PacketType::SPAWN_BALL:
+    {
+        auto& packetTmp = static_cast<SpawnBallPacket&>(sendingPacket);
+        packet << packetTmp;
+        break;
+    }
     default:;
     }
 }
@@ -333,6 +354,13 @@ inline std::unique_ptr<Packet> GenerateReceivedPacket(sf::Packet& packet)
         packet >> *winGamePacket;
         return winGamePacket;
     }
+    case PacketType::SPAWN_BALL:
+    {
+        auto spawnBallPacket = std::make_unique<SpawnBallPacket>();
+        spawnBallPacket->packetType = packetTmp.packetType;
+        packet >> *spawnBallPacket;
+        return spawnBallPacket;
+    }
     default:;
     }
     return nullptr;
@@ -341,7 +369,7 @@ inline std::unique_ptr<Packet> GenerateReceivedPacket(sf::Packet& packet)
 class PacketSenderInterface
 {
 public:
-    virtual void SendReliablePacket(std::unique_ptr<asteroid::Packet> packet) = 0;
-    virtual void SendUnreliablePacket(std::unique_ptr<asteroid::Packet> packet) = 0;
+    virtual void SendReliablePacket(std::unique_ptr<pongsoso::Packet> packet) = 0;
+    virtual void SendUnreliablePacket(std::unique_ptr<pongsoso::Packet> packet) = 0;
 };
 } // namespace neko::asteroid

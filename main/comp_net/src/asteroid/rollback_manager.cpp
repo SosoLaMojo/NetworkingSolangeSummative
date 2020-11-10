@@ -29,7 +29,7 @@
 #include "easy/profiler.h"
 #endif
 
-namespace neko::asteroid
+namespace neko::pongsoso
 {
 
 
@@ -38,14 +38,18 @@ RollbackManager::RollbackManager(GameManager& gameManager, EntityManager& entity
     currentTransformManager_(entityManager),
     currentPhysicsManager_(entityManager), currentPlayerManager_(entityManager, currentPhysicsManager_, gameManager_),
     currentBulletManager_(entityManager, gameManager),
+    currentBallManager_(entityManager, gameManager),
     lastValidatePhysicsManager_(entityManager),
-    lastValidatePlayerManager_(entityManager, lastValidatePhysicsManager_, gameManager_), lastValidateBulletManager_(entityManager, gameManager)
+    lastValidatePlayerManager_(entityManager, lastValidatePhysicsManager_, gameManager_),
+	lastValidateBulletManager_(entityManager, gameManager),
+    lastValidateBallManager_(entityManager, gameManager)
 {
     for (auto& input : inputs_)
     {
         std::fill(input.begin(), input.end(), 0u);
     }
     lastValidatePhysicsManager_.RegisterCollisionListener(*this);
+    lastValidatePhysicsManager_.RegisterCollisionListener(gameManager);
 }
 
 void RollbackManager::SimulateToCurrentFrame()
@@ -76,6 +80,7 @@ void RollbackManager::SimulateToCurrentFrame()
     createdEntities_.clear();
     //Revert the current game state to the last validated game state
     currentBulletManager_ = lastValidateBulletManager_;
+    currentBallManager_ = lastValidateBallManager_;
     currentPhysicsManager_ = lastValidatePhysicsManager_;
     currentPlayerManager_ = lastValidatePlayerManager_;
 
@@ -93,6 +98,7 @@ void RollbackManager::SimulateToCurrentFrame()
         }
         //Simulate one frame of the game
         currentBulletManager_.FixedUpdate(seconds(GameManager::FixedPeriod));
+        currentBallManager_.FixedUpdate(seconds(GameManager::FixedPeriod));
         currentPlayerManager_.FixedUpdate(seconds(GameManager::FixedPeriod));
         currentPhysicsManager_.FixedUpdate(seconds(GameManager::FixedPeriod));
     }
@@ -188,6 +194,7 @@ void RollbackManager::ValidateFrame(net::Frame newValidateFrame)
     }
     //We use the current game state as the temporary new validate game state
     currentBulletManager_ = lastValidateBulletManager_;
+    currentBallManager_ = lastValidateBallManager_;
     currentPhysicsManager_ = lastValidatePhysicsManager_;
     currentPlayerManager_ = lastValidatePlayerManager_;
 
@@ -206,6 +213,7 @@ void RollbackManager::ValidateFrame(net::Frame newValidateFrame)
         }
         //We simulate one frame
         currentBulletManager_.FixedUpdate(seconds(GameManager::FixedPeriod));
+        currentBallManager_.FixedUpdate(seconds(GameManager::FixedPeriod));
         currentPlayerManager_.FixedUpdate(seconds(GameManager::FixedPeriod));
         currentPhysicsManager_.FixedUpdate(seconds(GameManager::FixedPeriod));
     }
@@ -219,6 +227,7 @@ void RollbackManager::ValidateFrame(net::Frame newValidateFrame)
     }
     //Copy back the new validate game state to the last validated game state
     lastValidateBulletManager_ = currentBulletManager_;
+    lastValidateBallManager_ = currentBallManager_;
     lastValidatePlayerManager_ = currentPlayerManager_;
     lastValidatePhysicsManager_ = currentPhysicsManager_;
     lastValidateFrame_ = newValidateFrame;
@@ -304,6 +313,7 @@ void RollbackManager::SpawnPlayer(net::PlayerNumber playerNumber, Entity entity,
     currentTransformManager_.AddComponent(entity);
     currentTransformManager_.SetPosition(entity, position);
     currentTransformManager_.SetRotation(entity, rotation);
+    currentTransformManager_.SetScale(entity, Vec2f (playerScaleX, playerScaleY));
 }
 
 net::PlayerInput RollbackManager::GetInputAtFrame(net::PlayerNumber playerNumber, net::Frame frame)
@@ -356,7 +366,7 @@ void RollbackManager::SpawnBullet(net::PlayerNumber playerNumber, Entity entity,
     bulletBody.position = position;
     bulletBody.velocity = velocity;
     Box bulletBox;
-    bulletBox.extends = Vec2f::one * bulletScale * 0.5f;
+    bulletBox.extends = Vec2f::one * ballScale * 0.5f;
 
     currentBulletManager_.AddComponent(entity);
     //currentBulletManager_.SetComponent(entity, { bulletPeriod, playerNumber });
@@ -369,6 +379,29 @@ void RollbackManager::SpawnBullet(net::PlayerNumber playerNumber, Entity entity,
     currentTransformManager_.AddComponent(entity);
     currentTransformManager_.SetPosition(entity, position);
     currentTransformManager_.SetScale(entity, Vec2f::one * bulletScale);
+    currentTransformManager_.SetRotation(entity, degree_t(0.0f));
+    currentTransformManager_.UpdateDirtyComponent(entity);
+}
+void RollbackManager::SpawnBall(Entity entity, Vec2f position, Vec2f velocity)
+{
+    createdEntities_.push_back({ entity, testedFrame_ });
+
+    Body ballBody;
+    ballBody.position = position;
+    ballBody.velocity = velocity;
+    Box ballBox;
+    ballBox.extends = Vec2f::one * ballScale * 0.5f;
+
+    currentBallManager_.AddComponent(entity);
+
+    currentPhysicsManager_.AddBody(entity);
+    currentPhysicsManager_.SetBody(entity, ballBody);
+    currentPhysicsManager_.AddBox(entity);
+    currentPhysicsManager_.SetBox(entity, ballBox);
+
+    currentTransformManager_.AddComponent(entity);
+    currentTransformManager_.SetPosition(entity, position);
+    currentTransformManager_.SetScale(entity, Vec2f::one * ballScale);
     currentTransformManager_.SetRotation(entity, degree_t(0.0f));
     currentTransformManager_.UpdateDirtyComponent(entity);
 }

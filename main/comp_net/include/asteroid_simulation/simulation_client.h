@@ -24,8 +24,8 @@ public:
     void Render() override;
 
     
-    void SendUnreliablePacket(std::unique_ptr<asteroid::Packet> packet) override;
-    void SendReliablePacket(std::unique_ptr<asteroid::Packet> packet) override;
+    void SendUnreliablePacket(std::unique_ptr<pongsoso::Packet> packet) override;
+    void SendReliablePacket(std::unique_ptr<pongsoso::Packet> packet) override;
     
 
     void DrawImGui() override;

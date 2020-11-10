@@ -26,9 +26,9 @@ public:
         TCP,
         UDP
     };
-    void SendReliablePacket(std::unique_ptr<asteroid::Packet> packet) override;
+    void SendReliablePacket(std::unique_ptr<pongsoso::Packet> packet) override;
 
-    void SendUnreliablePacket(std::unique_ptr<asteroid::Packet> packet) override;
+    void SendUnreliablePacket(std::unique_ptr<pongsoso::Packet> packet) override;
 
     void Init() override;
 
@@ -43,7 +43,7 @@ protected:
     void SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumber) override;
 
 private:
-    void ProcessReceivePacket(std::unique_ptr<asteroid::Packet> packet, 
+    void ProcessReceivePacket(std::unique_ptr<pongsoso::Packet> packet, 
         PacketSocketSource packetSource, 
         sf::IpAddress address = "localhost", 
         unsigned short port = 0);
@@ -59,9 +59,9 @@ private:
     };
     sf::UdpSocket udpSocket_;
     sf::TcpListener tcpListener_;
-    std::array<sf::TcpSocket, asteroid::maxPlayerNmb> tcpSockets_;
+    std::array<sf::TcpSocket, pongsoso::maxPlayerNmb> tcpSockets_;
 
-    std::array<ClientInfo, asteroid::maxPlayerNmb> clientInfoMap_{};
+    std::array<ClientInfo, pongsoso::maxPlayerNmb> clientInfoMap_{};
 
 
     unsigned short tcpPort_ = 12345;

@@ -29,7 +29,7 @@
 #include "asteroid_net/debug_net_app.h"
 #include "asteroid_net/network_client.h"
 
-namespace neko::asteroid
+namespace neko::pongsoso
 {
 class ClientDebugEngine : public sdl::SdlEngine
 {
@@ -47,7 +47,7 @@ private:
 
 int main(int argc, char** argv)
 {
-    neko::asteroid::ClientDebugEngine engine;
+    neko::pongsoso::ClientDebugEngine engine;
 
     neko::sdl::Gles3Window window;
     neko::gl::Gles3Renderer renderer;

@@ -24,7 +24,7 @@
 #include "asteroid/physics_manager.h"
 #include "asteroid/game.h"
 
-namespace neko::asteroid
+namespace neko::pongsoso
 {
 
 PhysicsManager::PhysicsManager(EntityManager& entityManager) :
@@ -56,7 +56,7 @@ void PhysicsManager::FixedUpdate(seconds dt)
     {
         if(!entityManager_.get().HasComponent(entity, 
             EntityMask(neko::ComponentType::BODY2D)|EntityMask(neko::ComponentType::BOX_COLLIDER2D)) ||
-            entityManager_.get().HasComponent(entity, EntityMask(neko::asteroid::ComponentType::DESTROYED)))
+            entityManager_.get().HasComponent(entity, EntityMask(neko::pongsoso::ComponentType::DESTROYED)))
             continue;
         for (Entity otherEntity = entity; otherEntity < entityManager_.get().GetEntitiesSize(); otherEntity++)
         {
@@ -64,7 +64,7 @@ void PhysicsManager::FixedUpdate(seconds dt)
                 continue;
             if (!entityManager_.get().HasComponent(otherEntity,
                 EntityMask(neko::ComponentType::BODY2D) | EntityMask(neko::ComponentType::BOX_COLLIDER2D)) ||
-                entityManager_.get().HasComponent(entity, EntityMask(neko::asteroid::ComponentType::DESTROYED)))
+                entityManager_.get().HasComponent(entity, EntityMask(neko::pongsoso::ComponentType::DESTROYED)))
                 continue;
             const Body& body1 = bodyManager_.GetComponent(entity);
             const Box& box1 = boxManager_.GetComponent(entity);

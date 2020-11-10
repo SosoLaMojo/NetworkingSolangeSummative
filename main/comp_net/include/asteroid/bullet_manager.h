@@ -27,7 +27,7 @@
 #include "engine/component.h"
 #include "comp_net/type.h"
 
-namespace neko::asteroid
+namespace neko::pongsoso
 {
 struct Bullet
 {

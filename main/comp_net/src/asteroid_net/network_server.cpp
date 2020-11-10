@@ -28,11 +28,11 @@
 namespace neko::net
 {
 void ServerNetworkManager::SendReliablePacket(
-    std::unique_ptr<asteroid::Packet> packet)
+    std::unique_ptr<pongsoso::Packet> packet)
 {
     logDebug("[Server] Sending TCP packet: " +
         std::to_string(static_cast<int>(packet->packetType)));
-    for (PlayerNumber playerNumber = 0; playerNumber < asteroid::maxPlayerNmb;
+    for (PlayerNumber playerNumber = 0; playerNumber < pongsoso::maxPlayerNmb;
         playerNumber++)
     {
         sf::Packet sendingPacket;
@@ -58,9 +58,9 @@ void ServerNetworkManager::SendReliablePacket(
 }
 
 void ServerNetworkManager::SendUnreliablePacket(
-    std::unique_ptr<asteroid::Packet> packet)
+    std::unique_ptr<pongsoso::Packet> packet)
 {
-    for (PlayerNumber playerNumber = 0; playerNumber < asteroid::maxPlayerNmb;
+    for (PlayerNumber playerNumber = 0; playerNumber < pongsoso::maxPlayerNmb;
         playerNumber++)
     {
         if (clientInfoMap_[playerNumber].udpRemotePort == 0)
@@ -138,7 +138,7 @@ void ServerNetworkManager::Init()
 
 void ServerNetworkManager::Update(seconds dt)
 {
-    if (lastSocketIndex_ < asteroid::maxPlayerNmb)
+    if (lastSocketIndex_ < pongsoso::maxPlayerNmb)
     {
         const sf::Socket::Status status = tcpListener_.accept(
             tcpSockets_[lastSocketIndex_]);
@@ -153,7 +153,7 @@ void ServerNetworkManager::Update(seconds dt)
         }
     }
 
-    for (PlayerNumber playerNumber = 0; playerNumber < asteroid::maxPlayerNmb;
+    for (PlayerNumber playerNumber = 0; playerNumber < pongsoso::maxPlayerNmb;
         playerNumber++)
     {
         sf::Packet tcpPacket;
@@ -170,7 +170,7 @@ void ServerNetworkManager::Update(seconds dt)
                 "[Error] Player Number {} is disconnected when receiving",
                 playerNumber + 1));
             status_ = status_ & ~(FIRST_PLAYER_CONNECT << playerNumber);
-            auto endGame = std::make_unique<asteroid::WinGamePacket>();
+            auto endGame = std::make_unique<pongsoso::WinGamePacket>();
             SendReliablePacket(std::move(endGame));
             status_ = status_ & ~OPEN; //Close the server
             break;
@@ -209,14 +209,14 @@ void ServerNetworkManager::SpawnNewPlayer(ClientId clientId, PlayerNumber player
     //Spawning the new player in the arena
     for (PlayerNumber p = 0; p <= lastPlayerNumber_; p++)
     {
-        auto spawnPlayer = std::make_unique<asteroid::SpawnPlayerPacket>();
+        auto spawnPlayer = std::make_unique<pongsoso::SpawnPlayerPacket>();
         spawnPlayer->clientId = ConvertToBinary(clientMap_[p]);
         spawnPlayer->playerNumber = p;
 
-        const auto pos = asteroid::spawnPositions[p] * 3.0f; // SpawnPositionPlayer -> game.h ligne 58
+        const auto pos = pongsoso::spawnPositions[p] * 3.0f; // SpawnPositionPlayer -> game.h ligne 58
         spawnPlayer->pos = ConvertToBinary(pos);
 
-        const auto rotation = asteroid::spawnRotations[p];
+        const auto rotation = pongsoso::spawnRotations[p];
         spawnPlayer->angle = ConvertToBinary(rotation);
         gameManager_.SpawnPlayer(p, pos, rotation);
 
@@ -226,18 +226,18 @@ void ServerNetworkManager::SpawnNewPlayer(ClientId clientId, PlayerNumber player
 
 
 void ServerNetworkManager::ProcessReceivePacket(
-    std::unique_ptr<asteroid::Packet> packet,
+    std::unique_ptr<pongsoso::Packet> packet,
     PacketSocketSource packetSource,
     sf::IpAddress address,
     unsigned short port)
 {
 
-    const auto packetType = static_cast<asteroid::PacketType>(packet->packetType);
+    const auto packetType = static_cast<pongsoso::PacketType>(packet->packetType);
     switch (packetType)
     {
-    case asteroid::PacketType::JOIN:
+    case pongsoso::PacketType::JOIN:
     {
-        const auto joinPacket = *static_cast<asteroid::JoinPacket*>(packet.get());
+        const auto joinPacket = *static_cast<pongsoso::JoinPacket*>(packet.get());
         Server::ReceivePacket(std::move(packet));
         auto clientId = ConvertFromBinary<ClientId>(joinPacket.clientId);
         logDebug(fmt::format("[Server] Received Join Packet from: {} {}", clientId,
@@ -254,7 +254,7 @@ void ServerNetworkManager::ProcessReceivePacket(
             neko_assert(false, "Player Number is supposed to be already set!")
         }
 
-        auto joinAckPacket = std::make_unique<asteroid::JoinAckPacket>();
+        auto joinAckPacket = std::make_unique<pongsoso::JoinAckPacket>();
         joinAckPacket->clientId = ConvertToBinary(clientId);
         joinAckPacket->udpPort = ConvertToBinary(udpPort_);
         if (packetSource == PacketSocketSource::UDP)
@@ -287,7 +287,7 @@ void ServerNetworkManager::ReceivePacket(sf::Packet& packet,
     sf::IpAddress address,
     unsigned short port)
 {
-    auto receivedPacket = asteroid::GenerateReceivedPacket(packet);
+    auto receivedPacket = pongsoso::GenerateReceivedPacket(packet);
 
     if (receivedPacket != nullptr)
     {

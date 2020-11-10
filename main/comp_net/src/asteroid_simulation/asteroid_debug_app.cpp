@@ -67,6 +67,7 @@ void SimulationDebugApp::Init()
             server_.Init();
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glDisable(GL_DEPTH_TEST); // dessine au dessus
         });
     BasicEngine::GetInstance()->ScheduleJob(&initJob, JobThreadType::RENDER_THREAD);
     initJob.Join();
@@ -77,20 +78,20 @@ void SimulationDebugApp::Update(seconds dt)
     //Checking if keys are down
     const Uint8* keys = SDL_GetKeyboardState(nullptr);
     net::PlayerInput clientInput1 = 0;
-    clientInput1 = clientInput1 | (keys[SDL_SCANCODE_LEFT] ? asteroid::PlayerInput::LEFT : 0u);
-    clientInput1 = clientInput1 | (keys[SDL_SCANCODE_RIGHT] ? asteroid::PlayerInput::RIGHT : 0u);
-    clientInput1 = clientInput1 | (keys[SDL_SCANCODE_UP] ? asteroid::PlayerInput::UP : 0u);
-    clientInput1 = clientInput1 | (keys[SDL_SCANCODE_DOWN] ? asteroid::PlayerInput::DOWN : 0u);
-    clientInput1 = clientInput1 | (keys[SDL_SCANCODE_RCTRL] ? asteroid::PlayerInput::SHOOT : 0u);
+    clientInput1 = clientInput1 | (keys[SDL_SCANCODE_LEFT] ? pongsoso::PlayerInput::LEFT : 0u);
+    clientInput1 = clientInput1 | (keys[SDL_SCANCODE_RIGHT] ? pongsoso::PlayerInput::RIGHT : 0u);
+    clientInput1 = clientInput1 | (keys[SDL_SCANCODE_UP] ? pongsoso::PlayerInput::UP : 0u);
+    clientInput1 = clientInput1 | (keys[SDL_SCANCODE_DOWN] ? pongsoso::PlayerInput::DOWN : 0u);
+    clientInput1 = clientInput1 | (keys[SDL_SCANCODE_RCTRL] ? pongsoso::PlayerInput::SHOOT : 0u);
 
     clients_[0]->SetPlayerInput(clientInput1);
 
     net::PlayerInput clientInput2 = 0;
-    clientInput2 = clientInput2 | (keys[SDL_SCANCODE_A] ? asteroid::PlayerInput::LEFT : 0u);
-    clientInput2 = clientInput2 | (keys[SDL_SCANCODE_D] ? asteroid::PlayerInput::RIGHT : 0u);
-    clientInput2 = clientInput2 | (keys[SDL_SCANCODE_W] ? asteroid::PlayerInput::UP : 0u);
-    clientInput2 = clientInput2 | (keys[SDL_SCANCODE_S] ? asteroid::PlayerInput::DOWN : 0u);
-    clientInput2 = clientInput2 | (keys[SDL_SCANCODE_SPACE] ? asteroid::PlayerInput::SHOOT : 0u);
+    clientInput2 = clientInput2 | (keys[SDL_SCANCODE_A] ? pongsoso::PlayerInput::LEFT : 0u);
+    clientInput2 = clientInput2 | (keys[SDL_SCANCODE_D] ? pongsoso::PlayerInput::RIGHT : 0u);
+    clientInput2 = clientInput2 | (keys[SDL_SCANCODE_W] ? pongsoso::PlayerInput::UP : 0u);
+    clientInput2 = clientInput2 | (keys[SDL_SCANCODE_S] ? pongsoso::PlayerInput::DOWN : 0u);
+    clientInput2 = clientInput2 | (keys[SDL_SCANCODE_SPACE] ? pongsoso::PlayerInput::SHOOT : 0u);
 
     clients_[1]->SetPlayerInput(clientInput2);
     server_.Update(dt);
@@ -139,7 +140,7 @@ void SimulationDebugApp::Render()
         }
         windowSize_ = config.windowSize;
     }
-    for (PlayerNumber playerNumber = 0; playerNumber < asteroid::maxPlayerNmb; playerNumber++)
+    for (PlayerNumber playerNumber = 0; playerNumber < pongsoso::maxPlayerNmb; playerNumber++)
     {
         clientsFramebuffer_[playerNumber].Bind();
         clientsFramebuffer_[playerNumber].Clear(Color::black);

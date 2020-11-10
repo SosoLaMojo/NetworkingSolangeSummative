@@ -5,16 +5,16 @@
 
 namespace neko::net
 {
-class Server : public asteroid::PacketSenderInterface, public SystemInterface
+class Server : public pongsoso::PacketSenderInterface, public SystemInterface
 {
 protected:
     virtual void SpawnNewPlayer(ClientId clientId, PlayerNumber playerNumber) = 0;
-    virtual void ReceivePacket(std::unique_ptr<asteroid::Packet> packet);
+    virtual void ReceivePacket(std::unique_ptr<pongsoso::Packet> packet);
 
     //Server game manager
-    asteroid::GameManager gameManager_;
+    pongsoso::GameManager gameManager_;
     PlayerNumber lastPlayerNumber_ = 0;
-    std::array<ClientId, asteroid::maxPlayerNmb> clientMap_{};
+    std::array<ClientId, pongsoso::maxPlayerNmb> clientMap_{};
 
 };
 }

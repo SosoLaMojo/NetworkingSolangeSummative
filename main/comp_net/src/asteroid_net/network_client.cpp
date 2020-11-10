@@ -107,7 +107,7 @@ void ClientNetworkManager::Update(seconds dt)
             if (serverUdpPort_ != 0)
             {
                 //Need to send a join packet on the unreliable channel
-                auto joinPacket = std::make_unique<asteroid::JoinPacket>();
+                auto joinPacket = std::make_unique<pongsoso::JoinPacket>();
                 joinPacket->clientId = ConvertToBinary<ClientId>(clientId_);
                 SendUnreliablePacket(std::move(joinPacket));
             }
@@ -151,7 +151,7 @@ void ClientNetworkManager::DrawImGui()
         if (status == sf::Socket::Done)
         {
             logDebug("[Client] Connect to server " + serverAddress_ + " with port: " + std::to_string(serverTcpPort_));
-            auto joinPacket = std::make_unique<asteroid::JoinPacket>();
+            auto joinPacket = std::make_unique<pongsoso::JoinPacket>();
             joinPacket->clientId = ConvertToBinary<ClientId>(clientId_);
             using namespace std::chrono;
             const unsigned long clientTime = (duration_cast<milliseconds>(system_clock::now().time_since_epoch())).count();
@@ -175,7 +175,7 @@ void ClientNetworkManager::Render()
     gameManager_.Render();
 }
 
-void ClientNetworkManager::SendReliablePacket(std::unique_ptr<asteroid::Packet> packet)
+void ClientNetworkManager::SendReliablePacket(std::unique_ptr<pongsoso::Packet> packet)
 {
 
     //logDebug("[Client] Sending reliable packet to server");
@@ -188,7 +188,7 @@ void ClientNetworkManager::SendReliablePacket(std::unique_ptr<asteroid::Packet> 
     }
 }
 
-void ClientNetworkManager::SendUnreliablePacket(std::unique_ptr<asteroid::Packet> packet)
+void ClientNetworkManager::SendUnreliablePacket(std::unique_ptr<pongsoso::Packet> packet)
 {
 
     sf::Packet udpPacket;
@@ -228,14 +228,14 @@ void ClientNetworkManager::SetPlayerInput(PlayerInput input)
 
 void ClientNetworkManager::ReceivePacket(sf::Packet& packet, PacketSource source)
 {
-    const auto receivePacket = asteroid::GenerateReceivedPacket(packet);
+    const auto receivePacket = pongsoso::GenerateReceivedPacket(packet);
     Client::ReceivePacket(receivePacket.get());
     switch (receivePacket->packetType)
     {
-    case asteroid::PacketType::JOIN_ACK:
+    case pongsoso::PacketType::JOIN_ACK:
     {
         logDebug("[Client] Receive " + std::string(source == PacketSource::UDP ? "UDP" : "TCP") + " Join ACK Packet");
-        auto* joinAckPacket = static_cast<asteroid::JoinAckPacket*>(receivePacket.get());
+        auto* joinAckPacket = static_cast<pongsoso::JoinAckPacket*>(receivePacket.get());
 
         serverUdpPort_ = ConvertFromBinary<unsigned short>(joinAckPacket->udpPort);
         const auto clientId = ConvertFromBinary<ClientId>(joinAckPacket->clientId);
@@ -244,7 +244,7 @@ void ClientNetworkManager::ReceivePacket(sf::Packet& packet, PacketSource source
         if (source == PacketSource::TCP)
         {
             //Need to send a join packet on the unreliable channel
-            auto joinPacket = std::make_unique<asteroid::JoinPacket>();
+            auto joinPacket = std::make_unique<pongsoso::JoinPacket>();
             joinPacket->clientId = ConvertToBinary<ClientId>(clientId_);
             SendUnreliablePacket(std::move(joinPacket));
         }

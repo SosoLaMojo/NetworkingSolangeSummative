@@ -32,7 +32,7 @@
 #include "easy/profiler.h"
 #endif
 
-namespace neko::asteroid
+namespace neko::pongsoso
 {
 
 GameManager::GameManager() :
@@ -66,6 +66,7 @@ void GameManager::SpawnPlayer(net::PlayerNumber playerNumber, Vec2f position, de
     transformManager_.AddComponent(entity);
     transformManager_.SetPosition(entity, position);
     transformManager_.SetRotation(entity, rotation);
+    transformManager_.SetScale(entity, Vec2f(playerScaleX, playerScaleY)); // scale player
     rollbackManager_.SpawnPlayer(playerNumber, entity, position, degree_t(rotation));
 }
 
@@ -108,6 +109,19 @@ Entity GameManager::SpawnBullet(net::PlayerNumber playerNumber, Vec2f position, 
     return entity;
 }
 
+Entity GameManager::SpawnBall(Vec2f position, Vec2f velocity)
+{
+    const Entity entity = entityManager_.CreateEntity();
+    //entityManager_.AddComponentType(entity, static_cast<EntityMask>(ComponentType::BALL));
+    transformManager_.AddComponent(entity);
+    transformManager_.SetPosition(entity, position);
+    transformManager_.SetScale(entity, Vec2f::one * ballScale);
+    transformManager_.UpdateDirtyComponent(entity);
+    rollbackManager_.SpawnBall(entity, position, velocity);
+    return entity;
+}
+
+
 void GameManager::DestroyBullet(Entity entity)
 {
     rollbackManager_.DestroyEntity(entity);
@@ -138,6 +152,10 @@ void GameManager::WinGame(net::PlayerNumber winner)
     winner_ = winner;
 }
 
+void GameManager::OnCollision(Entity entity1, Entity entity2)
+{
+}
+
 ClientGameManager::ClientGameManager(PacketSenderInterface& packetSenderInterface) :
     GameManager(),
     spriteManager_(entityManager_, textureManager_, transformManager_),
@@ -155,6 +173,11 @@ void ClientGameManager::Init()
     textureManager_.Init();
     spriteManager_.Init();
     fontManager_.Init();
+	// background
+	// load la texture
+	// créer une entity
+	// mettre la sprite
+	// taille voulu (scale) et diviser par 100
 
     const auto& config = BasicEngine::GetInstance()->config;
     fontId_ = fontManager_.LoadFont(config.dataRootPath + "font/8-bit-hud.ttf", 36);
@@ -279,6 +302,7 @@ void ClientGameManager::SetWindowSize(Vec2u windowsSize)
     windowSize_ = windowsSize;
     camera_.SetExtends(Vec2f(windowsSize) / PixelPerUnit);
     fontManager_.SetWindowSize(Vec2f(windowsSize));
+	// resize la taille de la sprite (background)
 }
 
 void ClientGameManager::Render()
@@ -327,6 +351,20 @@ Entity ClientGameManager::SpawnBullet(net::PlayerNumber playerNumber, Vec2f posi
     return entity;
 }
 
+Entity ClientGameManager::SpawnBall(Vec2f position, Vec2f velocity)
+{
+    const auto entity = GameManager::SpawnBall(position, velocity);
+    const auto& config = BasicEngine::GetInstance()->config;
+    if (ballTextureId_ == INVALID_TEXTURE_ID)
+    {
+        ballTextureId_ = textureManager_.LoadTexture(config.dataRootPath + "sprites/asteroid/bullet.png");
+    }
+    spriteManager_.AddComponent(entity);
+    spriteManager_.SetTexture(entity, ballTextureId_);
+    auto sprite = spriteManager_.GetComponent(entity);
+    spriteManager_.SetComponent(entity, sprite);
+    return entity;
+}
 
 void ClientGameManager::FixedUpdate()
 {
@@ -344,6 +382,7 @@ void ClientGameManager::FixedUpdate()
             if (ms > startingTime_)
             {
                 state_ = state_ | STARTED;
+                SpawnBall(Vec2f (0,0), Vec2f (1.0f, 1.0f)); // position, velocity
             }
             else
             {

@@ -89,7 +89,7 @@ void SimulationClient::DrawImGui()
     ImGui::Begin(windowName.c_str());
     if(gameManager_.GetPlayerNumber() == INVALID_PLAYER && ImGui::Button("Spawn Player"))
     {
-        auto joinPacket = std::make_unique<asteroid::JoinPacket>();
+        auto joinPacket = std::make_unique<pongsoso::JoinPacket>();
         auto* clientIdPtr = reinterpret_cast<std::uint8_t*>(&clientId_);
         for(int i = 0; i < sizeof(clientId_); i++)
         {
@@ -101,12 +101,12 @@ void SimulationClient::DrawImGui()
     ImGui::End();
 }
 
-void SimulationClient::SendUnreliablePacket(std::unique_ptr<asteroid::Packet> packet)
+void SimulationClient::SendUnreliablePacket(std::unique_ptr<pongsoso::Packet> packet)
 {
     server_.PutPacketInReceiveQueue(std::move(packet));
 }
 
-void SimulationClient::SendReliablePacket(std::unique_ptr<asteroid::Packet> packet)
+void SimulationClient::SendReliablePacket(std::unique_ptr<pongsoso::Packet> packet)
 {
     server_.PutPacketInReceiveQueue(std::move(packet));
 }

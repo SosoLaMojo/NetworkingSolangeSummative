@@ -5,7 +5,7 @@
 
 namespace neko::net
 {
-class Client : public RenderProgram, public DrawImGuiInterface, public asteroid::PacketSenderInterface
+class Client : public RenderProgram, public DrawImGuiInterface, public pongsoso::PacketSenderInterface
 {
 public:
     Client() : gameManager_(*this)
@@ -16,10 +16,10 @@ public:
     {
         gameManager_.SetWindowSize(windowSize);
     }
-    virtual void ReceivePacket(const asteroid::Packet *packet);
+    virtual void ReceivePacket(const pongsoso::Packet *packet);
 protected:
 
-    asteroid::ClientGameManager gameManager_;
+    pongsoso::ClientGameManager gameManager_;
     ClientId clientId_ = 0;
 };
 }

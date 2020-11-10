@@ -27,7 +27,7 @@
 #include "sdl_engine/sdl_engine.h"
 #include "asteroid_simulation/asteroid_debug_app.h"
 
-namespace neko::asteroid
+namespace neko::pongsoso
 {
 class DebugEngine : public sdl::SdlEngine
 {
@@ -52,7 +52,7 @@ private:
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
-    neko::asteroid::DebugEngine engine;
+    neko::pongsoso::DebugEngine engine;
 
     neko::sdl::Gles3Window window;
     neko::gl::Gles3Renderer renderer;
