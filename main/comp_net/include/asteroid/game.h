@@ -58,8 +58,8 @@ const std::array<Color4, std::max(maxPlayerNmb, 4u)> playerColors =
 const std::array<Vec2f, std::max(4u, maxPlayerNmb)> spawnPositions
 {
 	// Position des joueurs au spawn
-        Vec2f(1.8,0), // joueur 1
-        Vec2f(-1.8f,0), // joueur 2
+        Vec2f(2,0), // joueur 1
+        Vec2f(-2,0), // joueur 2
         Vec2f(1,0), // joueur 3
         Vec2f(-1,0), // joueur 4
 };

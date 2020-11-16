@@ -382,7 +382,7 @@ void ClientGameManager::FixedUpdate()
             if (ms > startingTime_)
             {
                 state_ = state_ | STARTED;
-                SpawnBall(Vec2f (0,0), Vec2f (1.0f, 1.0f)); // position, velocity
+                //SpawnBall(Vec2f (0,0), Vec2f (1.0f, 1.0f)); // position, velocity
             }
             else
             {

@@ -404,6 +404,11 @@ void RollbackManager::SpawnBall(Entity entity, Vec2f position, Vec2f velocity)
     currentTransformManager_.SetScale(entity, Vec2f::one * ballScale);
     currentTransformManager_.SetRotation(entity, degree_t(0.0f));
     currentTransformManager_.UpdateDirtyComponent(entity);
+
+    lastValidatePhysicsManager_.AddBody(entity);
+    lastValidatePhysicsManager_.SetBody(entity, ballBody);
+    lastValidatePhysicsManager_.AddBox(entity);
+    lastValidatePhysicsManager_.SetBox(entity, ballBox);
 }
 
 void RollbackManager::DestroyEntity(Entity entity)

@@ -28,15 +28,20 @@ void Server::ReceivePacket(std::unique_ptr<pongsoso::Packet> packet)
 
         if (lastPlayerNumber_ == pongsoso::maxPlayerNmb)
         {
+            auto spawnBallPacket = std::make_unique<pongsoso::SpawnBallPacket>();
+            spawnBallPacket->packetType = pongsoso::PacketType::SPAWN_BALL;
             auto startGamePacket = std::make_unique<pongsoso::StartGamePacket>(); // tout le if, commence la partie dans 3 sec -> 4sec
-            startGamePacket->packetType = pongsoso::PacketType::START_GAME; // <- EFFACER
+            startGamePacket->packetType = pongsoso::PacketType::START_GAME; // <- EFFACER -> Spawn_Ball packet convert to binary for velocity 
             using namespace std::chrono;
             unsigned long ms = (duration_cast<milliseconds>(
                 system_clock::now().time_since_epoch()
                 ) + milliseconds(3000)).count();
             startGamePacket->startTime = ConvertToBinary(ms);
-            SendReliablePacket(std::move(startGamePacket));
-        	// rajout envoi paquet SpawnBall
+            SendReliablePacket(std::move(startGamePacket)); // -> Même pour Spawn ball DONE
+            Vec2f dir = Vec2f(RandomRange(-1.0f, 1.0f), RandomRange(-1.0f, 1.0f)).Normalized();// -> direction aléatoire
+            spawnBallPacket->pos = ConvertToBinary(dir);
+            spawnBallPacket->velocity = ConvertToBinary(dir);
+            SendReliablePacket(std::move(spawnBallPacket));// rajout envoi paquet SpawnBall
         }
 
         break;

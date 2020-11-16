@@ -38,7 +38,7 @@ enum class PacketType : std::uint8_t
     JOIN = 0u,
     SPAWN_PLAYER,
     INPUT,
-    SPAWN_BULLET,
+    //SPAWN_BULLET,
     VALIDATE_STATE,
     START_GAME,
     JOIN_ACK,
@@ -229,18 +229,18 @@ inline sf::Packet& operator>>(sf::Packet& packet, WinGamePacket& winGamePacket)
 }
 struct SpawnBallPacket : TypedPacket<PacketType::SPAWN_BALL>
 {
-    std::array<std::uint8_t, sizeof(Vec2f)> pos{};
+    std::array<std::uint8_t, sizeof(Vec2f)> pos{}; // Delete
     std::array<std::uint8_t, sizeof(Vec2f)> velocity{};
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, const SpawnBallPacket& spawnBallPacket)
 {
-    return packet << spawnBallPacket.pos << spawnBallPacket.velocity;
+    return packet << spawnBallPacket.velocity;
 }
 
 inline sf::Packet& operator>>(sf::Packet& packet, SpawnBallPacket& spawnBallPacket)
 {
-    return packet >> spawnBallPacket.pos >> spawnBallPacket.velocity;
+    return packet >> spawnBallPacket.velocity;
 }
 
 inline void GeneratePacket(sf::Packet& packet, pongsoso::Packet& sendingPacket)
