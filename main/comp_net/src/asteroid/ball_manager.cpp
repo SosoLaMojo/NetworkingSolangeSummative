@@ -27,19 +27,29 @@
 
 namespace neko::pongsoso
 {
-BallManager::BallManager(EntityManager& entityManager, GameManager& gameManager) :
-    ComponentManager(entityManager), gameManager_(gameManager)
+BallManager::BallManager(EntityManager& entityManager, GameManager& gameManager, PhysicsManager& physicsManager) :
+    ComponentManager(entityManager), gameManager_(gameManager), physicsManager_(physicsManager)
 {
 }
 
 void BallManager::FixedUpdate(seconds dt)
 {
-    for(Entity entity = 0; entity < entityManager_.get().GetEntitiesSize(); entity++)
+    for(Entity ballEntity = 0; ballEntity < entityManager_.get().GetEntitiesSize(); ballEntity++)
     {
-        if(entityManager_.get().HasComponent(entity, EntityMask(ComponentType::BALL)))
+        if(entityManager_.get().HasComponent(ballEntity, EntityMask(ComponentType::BALL)))
         {
-            
+            auto& ball = components_[ballEntity];
+            auto ballBody = physicsManager_.get().GetBody(ballEntity);
+            if ((ballBody.position.y > ball.ballMaxHeight && ballBody.velocity.y > 0) || (ballBody.position.y < ball.ballMinHeight && ballBody.velocity.y < 0))
+            {
+                ballBody.velocity = Vec2f(ballBody.velocity.x, -ballBody.velocity.y);
+                physicsManager_.get().SetBody(ballEntity, ballBody);
+            }
         }
+
+        
     }
+
+    
 }
 }

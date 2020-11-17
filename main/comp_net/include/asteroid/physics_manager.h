@@ -84,6 +84,7 @@ private:
     BodyManager bodyManager_;
     BoxManager boxManager_;
     Action<Entity, Entity> onCollisionAction_;
+    std::vector<std::pair<Entity, Entity>> collisionDetection_; // enregistré quels objets sont déja en collision
 };
 
 }

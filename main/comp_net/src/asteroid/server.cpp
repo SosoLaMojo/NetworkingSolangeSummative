@@ -1,6 +1,7 @@
 #include "asteroid/server.h"
 #include "engine/log.h"
 #include "engine/conversion.h"
+#include "asteroid/game.h"
 
 namespace neko::net
 {
@@ -38,7 +39,7 @@ void Server::ReceivePacket(std::unique_ptr<pongsoso::Packet> packet)
                 ) + milliseconds(3000)).count();
             startGamePacket->startTime = ConvertToBinary(ms);
             SendReliablePacket(std::move(startGamePacket)); // -> Même pour Spawn ball DONE
-            Vec2f dir = Vec2f(RandomRange(-1.0f, 1.0f), RandomRange(-1.0f, 1.0f)).Normalized();// -> direction aléatoire
+            Vec2f dir = Vec2f(RandomRange(-1.0f, 1.0f), RandomRange(-1.0f, 1.0f)).Normalized() * pongsoso::ballSpeed;// -> direction aléatoire et vitesse de la balle
             spawnBallPacket->pos = ConvertToBinary(dir);
             spawnBallPacket->velocity = ConvertToBinary(dir);
             SendReliablePacket(std::move(spawnBallPacket));// rajout envoi paquet SpawnBall

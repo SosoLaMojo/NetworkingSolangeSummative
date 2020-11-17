@@ -38,11 +38,11 @@ RollbackManager::RollbackManager(GameManager& gameManager, EntityManager& entity
     currentTransformManager_(entityManager),
     currentPhysicsManager_(entityManager), currentPlayerManager_(entityManager, currentPhysicsManager_, gameManager_),
     currentBulletManager_(entityManager, gameManager),
-    currentBallManager_(entityManager, gameManager),
+    currentBallManager_(entityManager, gameManager, currentPhysicsManager_),
     lastValidatePhysicsManager_(entityManager),
     lastValidatePlayerManager_(entityManager, lastValidatePhysicsManager_, gameManager_),
 	lastValidateBulletManager_(entityManager, gameManager),
-    lastValidateBallManager_(entityManager, gameManager)
+    lastValidateBallManager_(entityManager, gameManager, lastValidatePhysicsManager_)
 {
     for (auto& input : inputs_)
     {
@@ -289,7 +289,8 @@ void RollbackManager::SpawnPlayer(net::PlayerNumber playerNumber, Entity entity,
     playerBody.position = position;
     playerBody.rotation = rotation;
     Box playerBox;
-    playerBox.extends = Vec2f::one * 0.5f;
+    Vec2f playerScale(playerScaleX, playerScaleY);
+    playerBox.extends = Vec2f::one * playerScale * 0.5f;
 
     PlayerCharacter playerCharacter;
     playerCharacter.playerNumber = playerNumber;
@@ -325,36 +326,41 @@ net::PlayerInput RollbackManager::GetInputAtFrame(net::PlayerNumber playerNumber
 
 void RollbackManager::OnCollision(Entity entity1, Entity entity2)
 {
-    std::function<void(const PlayerCharacter&, Entity, const Bullet&, Entity)> ManageCollision =
-        [this](const auto& player, auto playerEntity, const auto& bullet, auto bulletEntity)
+    std::function<void(const PlayerCharacter&, Entity, const Ball&, Entity)> ManageCollision =
+        [this](const auto& player, auto playerEntity, const auto& ball, auto ballEntity)
     {
-        if (player.playerNumber != bullet.playerNumber)
-        {
-            gameManager_.DestroyBullet(bulletEntity);
-            //lower health point
-            auto playerCharacter = currentPlayerManager_.GetComponent(playerEntity);
-            //if (playerCharacter.invincibilityTime <= 0.0f)
-            {
-                //playerCharacter.health--;
-                //playerCharacter.invincibilityTime = playerInvincibilityPeriod;
-            }
-            currentPlayerManager_.SetComponent(playerEntity, playerCharacter);
-        }
+        Body ballBody = currentPhysicsManager_.GetBody(ballEntity);
+        ballBody.velocity = Vec2f(-ballBody.velocity.x, ballBody.velocity.y);
+        currentPhysicsManager_.SetBody(ballEntity, ballBody);
+    	
+        //if (player.playerNumber != ball.playerNumber)
+        //{
+        //    logDebug("Collision");
+        //    //gameManager_.DestroyBullet(ballEntity);
+        //    //lower health point
+        //    auto playerCharacter = currentPlayerManager_.GetComponent(playerEntity);
+        //    //if (playerCharacter.invincibilityTime <= 0.0f)
+        //    {
+        //        //playerCharacter.health--;
+        //        //playerCharacter.invincibilityTime = playerInvincibilityPeriod;
+        //    }
+        //    currentPlayerManager_.SetComponent(playerEntity, playerCharacter);
+        //}
     };
     if (entityManager_.HasComponent(entity1, EntityMask(ComponentType::PLAYER_CHARACTER)) &&
-        entityManager_.HasComponent(entity2, EntityMask(ComponentType::BULLET)))
+        entityManager_.HasComponent(entity2, EntityMask(ComponentType::BALL)))
     {
         const auto& player = currentPlayerManager_.GetComponent(entity1);
-        const auto& bullet = currentBulletManager_.GetComponent(entity2);
-        ManageCollision(player, entity1, bullet, entity2);
+        const auto& ball = currentBallManager_.GetComponent(entity2);
+        ManageCollision(player, entity1, ball, entity2);
 
     }
     if (entityManager_.HasComponent(entity2, EntityMask(ComponentType::PLAYER_CHARACTER)) &&
-        entityManager_.HasComponent(entity1, EntityMask(ComponentType::BULLET)))
+        entityManager_.HasComponent(entity1, EntityMask(ComponentType::BALL)))
     {
         const auto& player = currentPlayerManager_.GetComponent(entity2);
-        const auto& bullet = currentBulletManager_.GetComponent(entity1);
-        ManageCollision(player, entity2, bullet, entity1);
+        const auto& ball = currentBallManager_.GetComponent(entity1);
+        ManageCollision(player, entity2, ball, entity1);
     }
 }
 
