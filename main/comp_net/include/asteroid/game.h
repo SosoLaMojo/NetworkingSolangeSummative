@@ -32,7 +32,7 @@ namespace neko::pongsoso
 {
 
 const std::uint32_t maxPlayerNmb = 2;
-const short playerHealth = 5;
+const short playerHealth = 11;
 const float playerSpeed = 1.0f;
 const float playerScaleX = 0.5f;// Scale player
 const float playerScaleY = 3.0f;// Scale player

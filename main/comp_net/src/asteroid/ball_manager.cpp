@@ -24,11 +24,12 @@
 
 #include "asteroid/ball_manager.h"
 #include "asteroid/game.h"
+#include "asteroid/game_manager.h"
 
 namespace neko::pongsoso
 {
-BallManager::BallManager(EntityManager& entityManager, GameManager& gameManager, PhysicsManager& physicsManager) :
-    ComponentManager(entityManager), gameManager_(gameManager), physicsManager_(physicsManager)
+BallManager::BallManager(EntityManager& entityManager, GameManager& gameManager, PhysicsManager& physicsManager, PlayerCharacterManager& playerCharacterManager) :
+    ComponentManager(entityManager), gameManager_(gameManager), physicsManager_(physicsManager), playerCharacterManager_(playerCharacterManager)
 {
 }
 
@@ -40,16 +41,29 @@ void BallManager::FixedUpdate(seconds dt)
         {
             auto& ball = components_[ballEntity];
             auto ballBody = physicsManager_.get().GetBody(ballEntity);
+        	// Limitation de hauteur pour le rebond de la balle (wall up and down)
             if ((ballBody.position.y > ball.ballMaxHeight && ballBody.velocity.y > 0) || (ballBody.position.y < ball.ballMinHeight && ballBody.velocity.y < 0))
             {
                 ballBody.velocity = Vec2f(ballBody.velocity.x, -ballBody.velocity.y);
                 physicsManager_.get().SetBody(ballEntity, ballBody);
             }
+	        if (ballBody.position.x < -7)
+	        {
+				auto playerCharacter = playerCharacterManager_.get().GetComponent(gameManager_.get().GetEntityFromPlayerNumber(0));
+	            playerCharacter.health--;
+                playerCharacterManager_.get().SetComponent(gameManager_.get().GetEntityFromPlayerNumber(0), playerCharacter);
+                ballBody.position = Vec2f(0, 0);
+                physicsManager_.get().SetBody(ballEntity, ballBody);
+	        }
+            if (ballBody.position.x > 7)
+            {
+                auto playerCharacter = playerCharacterManager_.get().GetComponent(gameManager_.get().GetEntityFromPlayerNumber(1));
+                playerCharacter.health--;
+                playerCharacterManager_.get().SetComponent(gameManager_.get().GetEntityFromPlayerNumber(1), playerCharacter);
+                ballBody.position = Vec2f (0, 0);
+                physicsManager_.get().SetBody(ballEntity, ballBody);
+            }
         }
-
-        
     }
-
-    
 }
 }
