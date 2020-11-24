@@ -101,10 +101,6 @@ void Client::ReceivePacket(const pongsoso::Packet* packet)
         gameManager_.WinGame(winGamePacket->winner);
         break;
     }
-    /*case pongsoso::PacketType::SPAWN_BULLET: break;
-    {
-	    
-    }*/
     case pongsoso::PacketType::SPAWN_BALL:
     {
         const auto* spawnBallPacket = static_cast<const pongsoso::SpawnBallPacket*>(packet);

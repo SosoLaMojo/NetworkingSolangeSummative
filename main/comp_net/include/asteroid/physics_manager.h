@@ -38,7 +38,6 @@ struct Body
 {
     Vec2f position = Vec2f::zero;
     Vec2f velocity = Vec2f::zero;
-    //degree_t angularVelocity = degree_t(0.0f);
     degree_t rotation = degree_t(0.0f);
     BodyType bodyType = BodyType::DYNAMIC;
 };

@@ -47,21 +47,14 @@ void PlayerCharacterManager::FixedUpdate(seconds dt)
         auto playerCharacter = GetComponent(playerEntity);
         const auto input = playerCharacter.input;
 
-        //const bool right = input & PlayerInput::RIGHT;
-        //const bool left = input & PlayerInput::LEFT;
         const bool up = input & PlayerInput::UP;
         const bool down = input & PlayerInput::DOWN;
 
-        //const auto angularVelocity = ((left ? 1.0f : 0.0f) + (right ? -1.0f : 0.0f)) * playerAngularSpeed;
-
-        //playerBody.angularVelocity = angularVelocity;
-
         auto dir = Vec2f::up;
-        //dir = dir.Rotate(-(playerBody.rotation + playerBody.angularVelocity * dt.count()));
 
         const auto acceleration = (((down ? -1.0f : 0.0f) + (up ? 1.0f : 0.0f)) * dir) * 5; // *5 = multiplication de l'accélération du player
 
-        playerBody.velocity = acceleration; // enlever * dt.count et + de += acceleration -> playerBody.velocity += acceleration * dt.count;
+        playerBody.velocity = acceleration;
         if ((playerBody.position.y > playerMaxHeight && playerBody.velocity.y > 0)|| (playerBody.position.y < playerMinHeight && playerBody.velocity.y < 0))
         {
         	// permet que les joueurs ne sortent pas de l'écran par le haut ou le bas
@@ -69,35 +62,6 @@ void PlayerCharacterManager::FixedUpdate(seconds dt)
         }
 
         physicsManager_.get().SetBody(playerEntity, playerBody);
-
-        if(playerCharacter.invincibilityTime > 0.0f)
-        {
-            playerCharacter.invincibilityTime -= dt.count();
-            SetComponent(playerEntity, playerCharacter);
-        }
-        //Check if cannot shoot, and increase shootingTime
-       /* if(playerCharacter.shootingTime < playerShootingPeriod)
-        {
-            playerCharacter.shootingTime += dt.count();
-            SetComponent(playerEntity, playerCharacter);
-        }*/
-        //Shooting mechanism
-        //if (playerCharacter.shootingTime >= playerShootingPeriod)
-        {
-            /*if(input & PlayerInput::SHOOT)
-            {
-                const auto currentPlayerSpeed = playerBody.velocity.Magnitude();
-                const auto bulletVelocity = dir *
-                    ((Vec2f::Dot(playerBody.velocity, dir) > 0.0f ? currentPlayerSpeed : 0.0f)
-                    + bulletSpeed);
-                const auto bulletPosition = playerBody.position + dir * 0.5f + playerBody.velocity * dt.count();
-                gameManager_.get().SpawnBullet(playerCharacter.playerNumber,
-                                               bulletPosition,
-                                               bulletVelocity);
-                playerCharacter.shootingTime = 0.0f;
-                SetComponent(playerEntity, playerCharacter);
-            }*/
-        }
     }
 }
 

@@ -203,19 +203,6 @@ void ClientGameManager::Update(seconds dt)
             {
                 const auto& player = rollbackManager_.GetPlayerCharacterManager().GetComponent(entity);
                 auto sprite = spriteManager_.GetComponent(entity);
-                //if (player.invincibilityTime > 0.0f)
-                //{
-                //    auto leftV = std::fmod(player.invincibilityTime, invincibilityFlashPeriod);
-                //    auto rightV = invincibilityFlashPeriod / 2.0f;
-                //    //logDebug(fmt::format("Comparing {} and {} with time: {}", leftV, rightV, player.invincibilityTime));
-                //}
-                //if (player.invincibilityTime > 0.0f &&
-                //    std::fmod(player.invincibilityTime, invincibilityFlashPeriod)
-                //    > invincibilityFlashPeriod / 2.0f)
-                //{
-                //    sprite.color = Color4(Color::black, 1.0f);
-                //}
-                //else
                 {
                     sprite.color = playerColors[player.playerNumber];
                 }
@@ -382,7 +369,6 @@ void ClientGameManager::FixedUpdate()
             if (ms > startingTime_)
             {
                 state_ = state_ | STARTED;
-                //SpawnBall(Vec2f (0,0), Vec2f (1.0f, 1.0f)); // position, velocity
             }
             else
             {

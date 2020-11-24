@@ -49,7 +49,6 @@ void PhysicsManager::FixedUpdate(seconds dt)
             continue;
         auto body = bodyManager_.GetComponent(entity);
         body.position += body.velocity * dt.count();
-        //body.rotation += body.angularVelocity * dt.count();
         bodyManager_.SetComponent(entity, body);
     }
     for (Entity entity = 0; entity < entityManager_.get().GetEntitiesSize(); entity++)
@@ -92,11 +91,6 @@ void PhysicsManager::FixedUpdate(seconds dt)
             		if (std::pair<Entity, Entity>(entity, otherEntity) == collisionDetection_[i] || std::pair<Entity, Entity>(otherEntity, entity) == collisionDetection_[i])
             		{
                         isOnCollision = true;
-            			// Augementation de la vitesse de la balle à chaque fois qu'elle entre en collision avec un paddle
-            			//if (collisionDetection)
-            			//{
-            			//      velocity de la ball ++
-            			//}
                         break;
             		}
             	}
@@ -104,7 +98,6 @@ void PhysicsManager::FixedUpdate(seconds dt)
             	{
 					collisionDetection_.push_back(pair);
 					onCollisionAction_.Execute(entity, otherEntity);
-            		
             	}
             }
             else

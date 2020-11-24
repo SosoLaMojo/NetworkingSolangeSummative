@@ -34,10 +34,8 @@ namespace neko::pongsoso
 const std::uint32_t maxPlayerNmb = 2;
 const short playerHealth = 11;
 const float playerSpeed = 1.0f;
-const float playerScaleX = 0.5f;// Scale player
-const float playerScaleY = 3.0f;// Scale player
-//const degree_t playerAngularSpeed = degree_t(90.0f);
-//const float playerShootingPeriod = 0.3f;
+const float playerScaleX = 0.5f;
+const float playerScaleY = 3.0f;
 const float ballSpeed = 2.0f;
 const float bulletScale = 0.2f;
 const float ballScale = 0.5f;
@@ -47,9 +45,6 @@ const float playerMaxHeight = 4.5f;
 const float playerMinHeight = -5.0f;
 const float ballPoint = 7;
 const float multipleBallVelocity = 1.1f;
-//const float bulletPeriod = 3.0f;
-//const float playerInvincibilityPeriod = 1.5f;
-//const float invincibilityFlashPeriod = 0.5f;
 
 const std::array<Color4, std::max(maxPlayerNmb, 4u)> playerColors =
 {
