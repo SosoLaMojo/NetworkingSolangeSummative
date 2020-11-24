@@ -37,8 +37,7 @@ struct PlayerCharacter
     net::PlayerNumber playerNumber = net::INVALID_PLAYER;
     short health = playerHealth;
     float invincibilityTime = 0.0f;
-    float playerMaxHeight = 4.5f;
-    float playerMinHeight = -5.0f;
+    
 };
 class GameManager;
 class PlayerCharacterManager : public ComponentManager<PlayerCharacter, EntityMask(ComponentType::PLAYER_CHARACTER)>

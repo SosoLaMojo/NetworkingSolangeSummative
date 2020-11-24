@@ -40,9 +40,10 @@ void Server::ReceivePacket(std::unique_ptr<pongsoso::Packet> packet)
             startGamePacket->startTime = ConvertToBinary(ms);
             SendReliablePacket(std::move(startGamePacket)); // -> Même pour Spawn ball DONE
             Vec2f dir = Vec2f(RandomRange(-1.0f, 1.0f), RandomRange(-1.0f, 1.0f)).Normalized() * pongsoso::ballSpeed;// -> direction aléatoire et vitesse de la balle
-            spawnBallPacket->pos = ConvertToBinary(dir);
+            spawnBallPacket->pos = ConvertToBinary(Vec2f::zero);
             spawnBallPacket->velocity = ConvertToBinary(dir);
             SendReliablePacket(std::move(spawnBallPacket));// rajout envoi paquet SpawnBall
+            gameManager_.SpawnBall(Vec2f::zero, dir);
         }
 
         break;

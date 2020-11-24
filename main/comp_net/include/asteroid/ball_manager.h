@@ -34,8 +34,7 @@ namespace neko::pongsoso
 struct Ball
 {
     float remainingTime = 0.0f;
-    float ballMaxHeight = 5.7f;
-    float ballMinHeight = -6.4f;
+    
     net::PlayerNumber playerNumber = net::INVALID_PLAYER;
 };
 class GameManager;
@@ -43,6 +42,7 @@ class BallManager : public ComponentManager<Ball, static_cast<EntityMask>(Compon
 {
 public:
     explicit BallManager(EntityManager& entityManager, GameManager& gameManager, PhysicsManager& physicsManager, PlayerCharacterManager& playerCharacterManager);
+    BallManager& operator= (const BallManager&);
     void FixedUpdate(seconds dt);
 private:
     std::reference_wrapper<GameManager> gameManager_;

@@ -33,6 +33,13 @@ BallManager::BallManager(EntityManager& entityManager, GameManager& gameManager,
 {
 }
 
+BallManager& BallManager::operator=(const BallManager& ballManager)
+{
+    components_ = ballManager.components_;
+    //We do NOT copy the physics manager
+    return *this;
+}
+
 void BallManager::FixedUpdate(seconds dt)
 {
     for(Entity ballEntity = 0; ballEntity < entityManager_.get().GetEntitiesSize(); ballEntity++)
@@ -42,25 +49,27 @@ void BallManager::FixedUpdate(seconds dt)
             auto& ball = components_[ballEntity];
             auto ballBody = physicsManager_.get().GetBody(ballEntity);
         	// Limitation de hauteur pour le rebond de la balle (wall up and down)
-            if ((ballBody.position.y > ball.ballMaxHeight && ballBody.velocity.y > 0) || (ballBody.position.y < ball.ballMinHeight && ballBody.velocity.y < 0))
+            if ((ballBody.position.y > ballMaxHeight && ballBody.velocity.y > 0) || (ballBody.position.y < ballMinHeight && ballBody.velocity.y < 0))
             {
                 ballBody.velocity = Vec2f(ballBody.velocity.x, -ballBody.velocity.y);
                 physicsManager_.get().SetBody(ballEntity, ballBody);
             }
-	        if (ballBody.position.x < -7)
+	        if (ballBody.position.x > ballPoint)
 	        {
 				auto playerCharacter = playerCharacterManager_.get().GetComponent(gameManager_.get().GetEntityFromPlayerNumber(0));
 	            playerCharacter.health--;
                 playerCharacterManager_.get().SetComponent(gameManager_.get().GetEntityFromPlayerNumber(0), playerCharacter);
                 ballBody.position = Vec2f(0, 0);
+                ballBody.velocity = Vec2f::zero - ballBody.velocity.Normalized() * ballSpeed;
                 physicsManager_.get().SetBody(ballEntity, ballBody);
 	        }
-            if (ballBody.position.x > 7)
+            if (ballBody.position.x < -ballPoint)
             {
                 auto playerCharacter = playerCharacterManager_.get().GetComponent(gameManager_.get().GetEntityFromPlayerNumber(1));
                 playerCharacter.health--;
                 playerCharacterManager_.get().SetComponent(gameManager_.get().GetEntityFromPlayerNumber(1), playerCharacter);
                 ballBody.position = Vec2f (0, 0);
+                ballBody.velocity = Vec2f::zero - ballBody.velocity.Normalized() * ballSpeed;
                 physicsManager_.get().SetBody(ballEntity, ballBody);
             }
         }

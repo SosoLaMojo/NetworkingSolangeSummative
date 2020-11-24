@@ -62,7 +62,7 @@ void PlayerCharacterManager::FixedUpdate(seconds dt)
         const auto acceleration = (((down ? -1.0f : 0.0f) + (up ? 1.0f : 0.0f)) * dir) * 5; // *5 = multiplication de l'accélération du player
 
         playerBody.velocity = acceleration; // enlever * dt.count et + de += acceleration -> playerBody.velocity += acceleration * dt.count;
-        if ((playerBody.position.y > playerCharacter.playerMaxHeight && playerBody.velocity.y > 0)|| (playerBody.position.y < playerCharacter.playerMinHeight && playerBody.velocity.y < 0))
+        if ((playerBody.position.y > playerMaxHeight && playerBody.velocity.y > 0)|| (playerBody.position.y < playerMinHeight && playerBody.velocity.y < 0))
         {
         	// permet que les joueurs ne sortent pas de l'écran par le haut ou le bas
             playerBody.velocity = Vec2f::zero;
@@ -103,7 +103,6 @@ void PlayerCharacterManager::FixedUpdate(seconds dt)
 
 PlayerCharacterManager& PlayerCharacterManager::operator=(const PlayerCharacterManager& playerCharacterManager)
 {
-    gameManager_ = playerCharacterManager.gameManager_;
     components_ = playerCharacterManager.components_;
     //We do NOT copy the physics manager
     return *this;
